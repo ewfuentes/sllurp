@@ -596,8 +596,8 @@ class LLRPClient (LineReceiver):
         if onCompletion:
             self._deferreds['ENABLE_ACCESSSPEC_RESPONSE'].append(onCompletion)
 
-    def startAccess (self, readWords=None, writeWords=None, target = None,
-            *args):
+    def startAccess (self, readWords=None, writeWords=None, target = None, 
+                     accessCount=0, *args):
         m = Message_struct['AccessSpec']
         if not target:
             target = {
@@ -642,8 +642,8 @@ class LLRPClient (LineReceiver):
             'ROSpecID': 0, # all ROSpecs
             'AccessSpecStopTrigger': {
                 # 1 = stop after OperationCountValue accesses
-                'AccessSpecStopTriggerType': 0,
-                'OperationCountValue': 1,
+                'AccessSpecStopTriggerType': 1 if accessCount > 0 else 0,
+                'OperationCountValue': accessCount,
             },
             'AccessCommand': {
                 'TagSpecParameter': {
