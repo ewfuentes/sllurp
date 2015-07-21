@@ -580,6 +580,30 @@ Message_struct['RO_ACCESS_REPORT'] = {
     'decode': decode_ROAccessReport
 }
 
+# 16.1.35 KEEPALIVE
+def decode_Keepalive(msg):
+    return ''
+
+Message_struct['KEEPALIVE'] = {
+    'type': 62,
+    'fields': [
+        'Ver', 'Type', 'ID',
+    ],
+    'decode': decode_Keepalive
+}
+
+# 16.1.36 KEEPALIVE_ACK
+def encode_KeepaliveAck(msg):
+    return ''
+
+Message_struct['KEEPALIVE_ACK'] = {
+    'type': 72,
+    'fields': [
+        'Ver', 'Type', 'ID',
+    ],
+    'encode': encode_KeepaliveAck
+}
+
 # 16.1.33 READER_EVENT_NOTIFICATION
 def decode_ReaderEventNotification(data):
     msg = LLRPMessageDict()
@@ -1567,7 +1591,10 @@ def encode_AccessCommand (par):
     data = encode_C1G2TagSpec(par['TagSpecParameter'])
 
     if 'WriteData' in par['OpSpecParameter']:
-        data += encode_C1G2Write(par['OpSpecParameter'])
+        if par['OpSpecParameter']['WriteDataWordCount'] > 1:
+            data += encode_C1G2BlockWrite(par['OpSpecParameter'])
+        else:
+            data += encode_C1G2Write(par['OpSpecParameter'])
     else:
         data += encode_C1G2Read(par['OpSpecParameter'])
 
@@ -1701,6 +1728,37 @@ def encode_C1G2Write (par):
 
 Message_struct['C1G2Write'] = {
     'type': 342,
+    'fields': [
+        'Type',
+        'OpSpecID',
+        'MB',
+        'WordPtr',
+        'AccessPassword'
+        'WriteDataWordCount',
+        'WriteData'
+    ],
+    'encode': encode_C1G2Write
+}
+
+# 16.2.1.3.2.7 C1G2BlockWrite
+def encode_C1G2BlockWrite (par):
+    msgtype = Message_struct['C1G2BlockWrite']['type']
+    msg_header = '!HH'
+    msg_header_len = struct.calcsize(msg_header)
+
+    data = struct.pack('!H', int(par['OpSpecID']))
+    data += struct.pack('!I', int(par['AccessPassword']))
+    data += struct.pack('!B', int(par['MB']) << 6)
+    data += struct.pack('!H', int(par['WordPtr']))
+    data += struct.pack('!H', int(par['WriteDataWordCount']))
+    data += par['WriteData']
+
+    data = struct.pack(msg_header, msgtype,
+            len(data) + msg_header_len) + data
+    return data
+
+Message_struct['C1G2BlockWrite'] = {
+    'type': 347,
     'fields': [
         'Type',
         'OpSpecID',
