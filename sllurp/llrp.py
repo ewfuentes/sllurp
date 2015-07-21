@@ -642,7 +642,7 @@ class LLRPClient (LineReceiver):
             opSpecParam['WordPtr'] = writeWords['WordPtr']
             opSpecParam['WriteDataWordCount'] = writeWords['WriteDataWordCount']
             opSpecParam['WriteData'] = writeWords['WriteData']
-            opSpecParam['blockWrite'] = blockOp
+            opSpecParam['BlockWrite'] = blockOp
             if 'OpSpecID' in writeWords:
                 opSpecParam['OpSpecID'] = writeWords['OpSpecID']
         else:

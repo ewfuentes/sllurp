@@ -1591,8 +1591,8 @@ def encode_AccessCommand (par):
     data = encode_C1G2TagSpec(par['TagSpecParameter'])
 
     if 'WriteData' in par['OpSpecParameter']:
-        if (('blockWrite' in par['OpSpecParameter']) and 
-                par['OpSpecParameter']['blockWrite']):
+        if (('BlockWrite' in par['OpSpecParameter']) and 
+                par['OpSpecParameter']['BlockWrite']):
             data += encode_C1G2BlockWrite(par['OpSpecParameter'])
         else:
             data += encode_C1G2Write(par['OpSpecParameter'])
