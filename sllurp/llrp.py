@@ -610,7 +610,7 @@ class LLRPClient (LineReceiver):
             self._deferreds['ENABLE_ACCESSSPEC_RESPONSE'].append(onCompletion)
 
     def startAccess (self, readWords=None, writeWords=None, target = None, 
-                     accessCount=0, *args):
+                     accessCount=0, blockOp = False, *args):
         m = Message_struct['AccessSpec']
         if not target:
             target = {
@@ -633,6 +633,7 @@ class LLRPClient (LineReceiver):
             opSpecParam['MB'] = readWords['MB']
             opSpecParam['WordPtr'] = readWords['WordPtr']
             opSpecParam['WordCount'] = readWords['WordCount']
+            opSpecParam['blockRead'] = blockOp
             if 'OpSpecID' in readWords:
                 opSpecParam['OpSpecID'] = readWords['OpSpecID']
 
@@ -641,6 +642,7 @@ class LLRPClient (LineReceiver):
             opSpecParam['WordPtr'] = writeWords['WordPtr']
             opSpecParam['WriteDataWordCount'] = writeWords['WriteDataWordCount']
             opSpecParam['WriteData'] = writeWords['WriteData']
+            opSpecParam['blockWrite'] = blockOp
             if 'OpSpecID' in writeWords:
                 opSpecParam['OpSpecID'] = writeWords['OpSpecID']
         else:
